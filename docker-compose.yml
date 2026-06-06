@@ -1,0 +1,22 @@
+version: '3.8'
+
+services:
+  auth-service:
+    build: ./auth-service
+    container_name: auth_container
+    ports:
+      - "3001:3001"
+    networks:
+      - microservices_network
+
+  payment-service:
+    build: ./payment-service
+    container_name: payment_container
+    ports:
+      - "3002:3002"
+    networks:
+      - microservices_network
+
+networks:
+  microservices_network:
+    driver: bridge
