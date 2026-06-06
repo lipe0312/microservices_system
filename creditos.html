@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cloud Architecture - Créditos</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-primary: #0f172a; --bg-card: #1e293b; --text-main: #f8fafc;
+            --text-muted: #94a3b8; --accent: #38bdf8; --accent-hover: #0ea5e9;
+            --border: #334155; --success: #10b981; --error: #ef4444;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; }
+        body { background-color: var(--bg-primary); color: var(--text-main); display: flex; flex-direction: column; justify-content: center; align-items: center; min-height: 100vh; padding: 20px; }
+        
+        .nav-bar { width: 100%; max-width: 480px; display: flex; background: var(--bg-card); padding: 6px; border-radius: 8px; margin-bottom: 20px; border: 1px solid var(--border); }
+        .nav-link { flex: 1; text-align: center; padding: 10px 0; font-size: 13px; font-weight: 600; color: var(--text-muted); text-decoration: none; border-radius: 6px; transition: all 0.2s ease; }
+        .nav-link.active { background: var(--bg-primary); color: var(--accent); }
+
+        .container { width: 100%; max-width: 480px; background: var(--bg-card); padding: 40px; border-radius: 16px; border: 1px solid var(--border); box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3); }
+        h1 { font-size: 22px; font-weight: 700; text-align: center; margin-bottom: 8px; }
+        .subtitle { font-size: 14px; color: var(--text-muted); text-align: center; margin-bottom: 32px; }
+        .form-group { margin-bottom: 20px; }
+        label { display: block; margin-bottom: 8px; font-size: 13px; font-weight: 500; }
+        select, input { width: 100%; padding: 12px 16px; background: var(--bg-primary); border: 1px solid var(--border); border-radius: 8px; color: var(--text-main); font-size: 14px; }
+        button { width: 100%; padding: 14px; background: var(--accent); color: var(--bg-primary); border: none; border-radius: 8px; font-size: 14px; font-weight: 700; cursor: pointer; transition: all 0.2s ease; margin-top: 10px; }
+        button:hover { background: var(--accent-hover); transform: translateY(-1px); }
+        .alert { padding: 14px 16px; border-radius: 8px; font-size: 13px; font-weight: 500; margin-bottom: 24px; display: none; }
+        .success { background: rgba(16, 185, 129, 0.1); color: var(--success); border: 1px solid rgba(16, 185, 129, 0.2); }
+        .error { background: rgba(239, 68, 68, 0.1); color: var(--error); border: 1px solid rgba(239, 68, 68, 0.2); }
+        .info-box { background: rgba(56, 189, 248, 0.06); padding: 12px 16px; border-radius: 8px; font-size: 13px; color: var(--accent); margin-bottom: 24px; border: 1px solid rgba(56, 189, 248, 0.15); text-align: center; }
+    </style>
+</head>
+<body>
+
+    <div class="nav-bar">
+        <a href="cadastro.html" class="nav-link">Cadastro</a>
+        <a href="login.html" class="nav-link">Login</a>
+        <a href="creditos.html" class="nav-link active">Créditos</a>
+    </div>
+
+    <div class="container">
+        <h1>Cloud Billing</h1>
+        <div class="subtitle">Adquirir Créditos da Operação</div>
+        
+        <div id="user-info" class="info-box">Verificando autenticação...</div>
+        <div id="alert-box" class="alert"></div>
+
+        <div class="form-group">
+            <label>Pacote de Créditos (Catálogo)</label>
+            <select id="pay-package">
+                <option value="1">Pacote Básico (10 créditos) — R$ 19,90</option>
+                <option value="2">Pacote Intermediário (50 créditos) — R$ 79,90</option>
+                <option value="3">Pacote Avançado (100 créditos) — R$ 149,90</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label>CPF do Titular</label>
+            <input type="text" id="pay-cpf" placeholder="000.000.000-00">
+        </div>
+        <div class="form-group">
+            <label>Cartão de Crédito</label>
+            <input type="text" id="pay-card" placeholder="4000 1234 5678 9010">
+        </div>
+        <button onclick="comprarCreditos()">Efetuar Faturamento</button>
+    </div>
+
+    <script>
+        // Recupera o ID salvo pelo microsserviço de login
+        const usuarioLogadoId = localStorage.getItem('userId') || '999';
+        const tokenValido = localStorage.getItem('token');
+
+        const infoBox = document.getElementById('user-info');
+        if (tokenValido) {
+            infoBox.innerText = `Sessão ativa para o Usuário ID: ${usuarioLogadoId}`;
+        } else {
+            infoBox.innerText = `Modo Anonimato (ID Teste: 999). Faça login para uma sessão segura.`;
+            infoBox.style.borderColor = "rgba(239, 68, 68, 0.3)";
+            infoBox.style.color = "#ef4444";
+        }
+
+        async function comprarCreditos() {
+            const packageId = parseInt(document.getElementById('pay-package').value);
+            const cpf = document.getElementById('pay-cpf').value;
+            const cardNumber = document.getElementById('pay-card').value;
+            const alertBox = document.getElementById('alert-box');
+
+            try {
+                const response = await fetch('http://localhost:3002/payments/checkout', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        packageId,
+                        userId: usuarioLogadoId,
+                        billingData: { cpf, cardNumber }
+                    })
+                });
+                const data = await response.json();
+
+                if (response.ok) {
+                    alertBox.innerText = data.message;
+                    alertBox.className = "alert success";
+                    alertBox.style.display = "block";
+                } else {
+                    alertBox.innerText = data.error;
+                    alertBox.className = "alert error";
+                    alertBox.style.display = "block";
+                }
+            } catch (err) {
+                alertBox.innerText = 'Erro: Payment Service offline.';
+                alertBox.className = "alert error";
+                alertBox.style.display = "block";
+            }
+        }
+    </script>
+</body>
+</html>
