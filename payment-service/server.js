@@ -1,5 +1,6 @@
 const express = require('express');
 const cors = require('cors');
+const authMiddleware = require('./middlewares/auth');
 
 const app = express();
 app.use(express.json());
@@ -11,7 +12,8 @@ const creditPackages = [
     { id: 3, name: 'Pacote Avançado', credits: 100, price: 149.90 }
 ];
 
-app.post('/payments/checkout', (req, res) => {
+// [SOLID: OCP] — proteção adicionada via middleware sem modificar lógica das rotas
+app.post('/payments/checkout', authMiddleware, (req, res) => {
     const { packageId, billingData, userId } = req.body;
 
     const selectedPackage = creditPackages.find(p => p.id === packageId);

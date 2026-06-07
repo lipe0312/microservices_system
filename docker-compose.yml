@@ -24,6 +24,7 @@ services:
       - "3002:3002"
     environment:
       - DATABASE_URL=postgres://user:password@db_payment:5432/payment_db
+      - JWT_SECRET=super_secret_key_faculdade
     depends_on:
       - db_payment
 
