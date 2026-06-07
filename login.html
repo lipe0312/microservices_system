@@ -74,12 +74,9 @@
                     localStorage.setItem('userPerfil', loginPerfil);
                     window.location.href = 'creditos.html';
                 } else { alert(data.error || 'Credenciais inválidas para o perfil selecionado.'); }
-            } catch (err) { 
-                // Fallback Simulado para Testes Visuais de Fluxo Completo:
-                localStorage.setItem('token', 'mock-token');
-                localStorage.setItem('userName', email.split('@')[0]);
-                localStorage.setItem('userPerfil', loginPerfil);
-                window.location.href = 'creditos.html';
+            } catch (err) {
+                console.error('[Login] Auth service inacessível:', err);
+                alert('Serviço de autenticação indisponível. Tente novamente em instantes.');
             }
         }
     </script>

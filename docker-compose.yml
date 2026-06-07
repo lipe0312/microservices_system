@@ -8,6 +8,12 @@ services:
       - "3001:3001"
     environment:
       - DATABASE_URL=postgres://user:password@db_auth:5432/auth_db
+      - DB_HOST=db_auth
+      - DB_PORT=5432
+      - DB_NAME=auth_db
+      - DB_USER=user
+      - DB_PASSWORD=password
+      - JWT_SECRET=super_secret_key_faculdade
     depends_on:
       - db_auth
 
