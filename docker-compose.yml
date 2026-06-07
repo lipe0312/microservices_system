@@ -1,22 +1,51 @@
 version: '3.8'
 
 services:
+  # Microsserviço de Autenticação
   auth-service:
     build: ./auth-service
-    container_name: auth_container
     ports:
       - "3001:3001"
-    networks:
-      - microservices_network
+    environment:
+      - DATABASE_URL=postgres://user:password@db_auth:5432/auth_db
+    depends_on:
+      - db_auth
 
+  # Microsserviço de Pagamentos
   payment-service:
     build: ./payment-service
-    container_name: payment_container
     ports:
       - "3002:3002"
-    networks:
-      - microservices_network
+    environment:
+      - DATABASE_URL=postgres://user:password@db_payment:5432/payment_db
+    depends_on:
+      - db_payment
 
-networks:
-  microservices_network:
-    driver: bridge
+  # Banco de Dados da Autenticação
+  db_auth:
+    image: postgres:15
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: auth_db
+    ports:
+      - "5433:5432"
+    volumes:
+      - auth_data:/var/lib/postgresql/data # <-- MAPEAMENTO DO VOLUME AQUI
+
+  # Banco de Dados do Pagamento (Bancos separados isolam os microsserviços)
+  db_payment:
+    image: postgres:15
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: payment_db
+    ports:
+      - "5434:5432"
+    volumes:
+      - payment_data:/var/lib/postgresql/data # <-- MAPEAMENTO DO VOLUME AQUI
+
+# DECLARAÇÃO GLOBAL DOS VOLUMES (No final do arquivo)
+volumes:
+  auth_data:
+  payment_data:
