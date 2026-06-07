@@ -3,94 +3,157 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cloud Architecture - Cadastro</title>
+    <title>Veridit - Cadastre-se</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg-primary: #0f172a; --bg-card: #1e293b; --text-main: #f8fafc;
-            --text-muted: #94a3b8; --accent: #38bdf8; --accent-hover: #0ea5e9;
-            --border: #334155; --success: #10b981; --error: #ef4444;
+            --purple: #8b2fc9; --purple-hover: #7221a8; --bg-light: #f8fafc;
+            --text-dark: #0f172a; --text-muted: #64748b; --border: #cbd5e1;
+            --green: #22c55e; --red: #ef4444;
         }
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; }
-        body { background-color: var(--bg-primary); color: var(--text-main); display: flex; flex-direction: column; justify-content: center; align-items: center; min-height: 100vh; padding: 20px; }
-        
-        .nav-bar { width: 100%; max-width: 480px; display: flex; background: var(--bg-card); padding: 6px; border-radius: 8px; margin-bottom: 20px; border: 1px solid var(--border); }
-        .nav-link { flex: 1; text-align: center; padding: 10px 0; font-size: 13px; font-weight: 600; color: var(--text-muted); text-decoration: none; border-radius: 6px; transition: all 0.2s ease; }
-        .nav-link.active { background: var(--bg-primary); color: var(--accent); }
-
-        .container { width: 100%; max-width: 480px; background: var(--bg-card); padding: 40px; border-radius: 16px; border: 1px solid var(--border); box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3); }
-        h1 { font-size: 22px; font-weight: 700; text-align: center; margin-bottom: 8px; }
-        .subtitle { font-size: 14px; color: var(--text-muted); text-align: center; margin-bottom: 32px; }
-        .form-group { margin-bottom: 20px; }
-        label { display: block; margin-bottom: 8px; font-size: 13px; font-weight: 500; }
-        input { width: 100%; padding: 12px 16px; background: var(--bg-primary); border: 1px solid var(--border); border-radius: 8px; color: var(--text-main); font-size: 14px; }
-        input:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.15); }
-        button { width: 100%; padding: 14px; background: var(--accent); color: var(--bg-primary); border: none; border-radius: 8px; font-size: 14px; font-weight: 700; cursor: pointer; transition: all 0.2s ease; margin-top: 10px; }
-        button:hover { background: var(--accent-hover); transform: translateY(-1px); }
-        .alert { padding: 14px 16px; border-radius: 8px; font-size: 13px; font-weight: 500; margin-bottom: 24px; display: none; }
-        .success { background: rgba(16, 185, 129, 0.1); color: var(--success); border: 1px solid rgba(16, 185, 129, 0.2); }
-        .error { background: rgba(239, 68, 68, 0.1); color: var(--error); border: 1px solid rgba(239, 68, 68, 0.2); }
+        body { background-color: #ffffff; color: var(--text-dark); min-height: 100vh; display: flex; flex-direction: column; }
+        header { width: 100%; padding: 20px 40px; display: flex; align-items: center; border-bottom: 1px solid #e2e8f0; }
+        .logo { font-size: 24px; font-weight: 700; color: #1e1b4b; display: flex; align-items: center; gap: 8px; }
+        .logo-icon { background: var(--purple); width: 24px; height: 18px; border-radius: 4px; display: inline-block; }
+        .main-container { display: flex; flex: 1; min-height: calc(100vh - 69px); }
+        .form-side { flex: 1; padding: 60px 80px; display: flex; flex-direction: column; justify-content: center; max-width: 600px; }
+        .image-side { flex: 1.2; background-color: #fae8ff; display: flex; align-items: center; justify-content: center; padding: 40px; }
+        .books-bg { width: 100%; height: 100%; max-height: 650px; background: url('https://images.unsplash.com/photo-1507842217343-583bb7270b66?q=80&w=1000') center/cover; border-radius: 16px; filter: hue-rotate(60deg) saturate(1.5); }
+        h1 { font-size: 32px; font-weight: 700; margin-bottom: 8px; }
+        .subtitle { font-size: 14px; color: var(--text-muted); margin-bottom: 24px; }
+        .link-purple { color: var(--purple); text-decoration: underline; cursor: pointer; }
+        .profile-tabs { display: flex; border: 1px solid var(--border); border-radius: 8px; margin-bottom: 24px; overflow: hidden; padding: 4px; background: var(--bg-light); }
+        .tab-btn { flex: 1; border: none; padding: 12px; font-size: 14px; font-weight: 600; cursor: pointer; background: transparent; color: var(--text-muted); border-radius: 6px; transition: 0.2s; }
+        .tab-btn.active { background: var(--purple); color: #ffffff; }
+        .form-group { margin-bottom: 16px; }
+        label { display: block; font-size: 13px; font-weight: 500; margin-bottom: 6px; }
+        input { width: 100%; padding: 12px; border: 1px solid var(--border); border-radius: 6px; font-size: 14px; background: var(--bg-light); }
+        .btn-continue { width: 100%; padding: 14px; background: var(--purple); color: #ffffff; border: none; border-radius: 6px; font-size: 14px; font-weight: 600; cursor: pointer; display: flex; justify-content: center; align-items: center; gap: 8px; transition: 0.2s; margin-top: 16px; }
+        .btn-continue:hover { background: var(--purple-hover); }
+        .rules-container { display: grid; grid-template-columns: 1fr; gap: 8px; margin-top: 12px; background: var(--bg-light); padding: 16px; border-radius: 8px; border: 1px solid var(--border); }
+        .rule-item { font-size: 13px; font-weight: 500; display: flex; align-items: center; gap: 8px; }
+        .rule-item.invalid { color: var(--red); }
+        .rule-item.valid { color: var(--green); }
     </style>
 </head>
 <body>
+    <header><div class="logo"><span class="logo-icon"></span> Veridit</div></header>
+    <div class="main-container">
+        <div class="form-side">
+            <div id="step-data">
+                <h1>Cadastre-se</h1>
+                <div class="subtitle">Insira seus dados para criar sua conta. Caso já tenha conta <span class="link-purple" onclick="window.location.href='login.html'">clique aqui</span></div>
+                <div class="profile-tabs">
+                    <button id="btn-adv" class="tab-btn active" onclick="setPerfil('Advogado')">Advogado</button>
+                    <button id="btn-usr" class="tab-btn" onclick="setPerfil('Usuário')">Usuário</button>
+                </div>
+                <div class="form-group"><label>Nome</label><input type="text" id="reg-name" placeholder="Digite seu nome"></div>
+                <div class="form-group"><label>Sobrenome</label><input type="text" id="reg-lastname" placeholder="Digite seu Sobrenome"></div>
+                <div class="form-group"><label>Email</label><input type="email" id="reg-email" placeholder="endereço@email.com"></div>
+                <div class="form-group"><label>CPF</label><input type="text" id="reg-cpf" placeholder="123.456.789-00"></div>
+                <div class="form-group" id="oab-group"><label>Número da OAB</label><input type="text" id="reg-oab" placeholder="Digite seu número"></div>
+                <button class="btn-continue" onclick="avancarEtapa()">Continuar &rarr;</button>
+            </div>
 
-    <div class="nav-bar">
-        <a href="cadastro.html" class="nav-link active">Cadastro</a>
-        <a href="login.html" class="nav-link">Login</a>
-        <a href="creditos.html" class="nav-link">Créditos</a>
-    </div>
-
-    <div class="container">
-        <h1>Cloud Architecture</h1>
-        <div class="subtitle">Criar Nova Conta Corporativa</div>
-        <div id="alert-box" class="alert"></div>
-
-        <div class="form-group">
-            <label>Nome Completo</label>
-            <input type="text" id="reg-name" placeholder="Ex: João Silva">
+            <div id="step-password" style="display: none;">
+                <h1>Crie uma senha forte</h1>
+                <div class="subtitle">A senha deve atender a todos os critérios de segurança abaixo:</div>
+                <div class="form-group"><label>Senha</label><input type="password" id="reg-password" oninput="validarSenha()" placeholder="Digite sua senha"></div>
+                <div class="form-group"><label>Confirme sua Senha</label><input type="password" id="reg-password-confirm" placeholder="Digite sua senha novamente"></div>
+                
+                <div class="rules-container">
+                    <div id="rule-len" class="rule-item invalid">✕ Mínimo de 8 caracteres</div>
+                    <div id="rule-upper" class="rule-item invalid">✕ Pelo menos uma letra maiúscula</div>
+                    <div id="rule-lower" class="rule-item invalid">✕ Pelo menos uma letra minúscula</div>
+                    <div id="rule-num" class="rule-item invalid">✕ Pelo menos um número</div>
+                    <div id="rule-spec" class="rule-item invalid">✕ Pelo menos um caractere especial (@, #, $, etc.)</div>
+                </div>
+                <button class="btn-continue" onclick="finalizarCadastro()">Concluir Cadastro &rarr;</button>
+            </div>
         </div>
-        <div class="form-group">
-            <label>E-mail</label>
-            <input type="email" id="reg-email" placeholder="nome@provedor.com">
-        </div>
-        <div class="form-group">
-            <label>Senha</label>
-            <input type="password" id="reg-password" placeholder="••••••••">
-        </div>
-        <button onclick="cadastrar()">Cadastrar Usuário</button>
+        <div class="image-side"><div class="books-bg"></div></div>
     </div>
 
     <script>
-        async function cadastrar() {
+        // Limpa lixos de sessões anteriores ao carregar a página
+        localStorage.clear();
+
+        let perfilSelecionado = 'Advogado';
+        let senhaValida = false;
+
+        function setPerfil(perfil) {
+            perfilSelecionado = perfil;
+            document.getElementById('btn-adv').classList.toggle('active', perfil === 'Advogado');
+            document.getElementById('btn-usr').classList.toggle('active', perfil === 'Usuário');
+            document.getElementById('oab-group').style.display = perfil === 'Advogado' ? 'block' : 'none';
+        }
+
+        function avancarEtapa() {
+            const campos = ['reg-name', 'reg-lastname', 'reg-email', 'reg-cpf'];
+            if (perfilSelecionado === 'Advogado') campos.push('reg-oab');
+            
+            for (let id of campos) {
+                if (!document.getElementById(id).value.trim()) {
+                    alert('Por favor, preencha todos os campos obrigatórios.');
+                    return;
+                }
+            }
+            document.getElementById('step-data').style.display = 'none';
+            document.getElementById('step-password').style.display = 'block';
+        }
+
+        function validarSenha() {
+            const senha = document.getElementById('reg-password').value;
+            const checks = {
+                len: senha.length >= 8,
+                upper: /[A-Z]/.test(senha),
+                lower: /[a-z]/.test(senha),
+                num: /[0-9]/.test(senha),
+                spec: /[^A-Za-z0-9]/.test(senha)
+            };
+
+            for (let k in checks) {
+                const el = document.getElementById(`rule-${k}`);
+                if (checks[k]) {
+                    el.className = "rule-item valid";
+                    el.innerText = "✓ " + el.innerText.substring(2);
+                } else {
+                    el.className = "rule-item invalid";
+                    el.innerText = "✕ " + el.innerText.substring(2);
+                }
+            }
+            senhaValida = Object.values(checks).every(Boolean);
+        }
+
+        async function finalizarCadastro() {
             const name = document.getElementById('reg-name').value;
             const email = document.getElementById('reg-email').value;
             const password = document.getElementById('reg-password').value;
-            const alertBox = document.getElementById('alert-box');
+            const confirm = document.getElementById('reg-password-confirm').value;
+
+            if (!senhaValida) { alert('Sua senha não atende aos requisitos.'); return; }
+            if (password !== confirm) { alert('As senhas não conferem.'); return; }
 
             try {
                 const response = await fetch('http://localhost:3001/auth/register', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ name, email, password })
+                    body: JSON.stringify({ name, email, password, perfil: perfilSelecionado })
                 });
-                const data = await response.json();
-                
                 if (response.ok) {
-                    alertBox.innerText = data.message + " Redirecionando para login...";
-                    alertBox.className = "alert success";
-                    alertBox.style.display = "block";
-                    setTimeout(() => window.location.href = 'login.html', 2000);
+                    alert('Cadastro realizado com sucesso!');
+                    window.location.href = 'login.html';
                 } else {
-                    alertBox.innerText = data.error;
-                    alertBox.className = "alert error";
-                    alertBox.style.display = "block";
+                    const data = await response.json();
+                    alert(data.error || 'Erro ao cadastrar.');
                 }
-            } catch (err) {
-                alertBox.innerText = 'Erro: Auth Service inacessível.';
-                alertBox.className = "alert error";
-                alertBox.style.display = "block";
+            } catch (err) { 
+                // Modo Simulado se o backend estiver fora do ar
+                alert('Modo demonstração: Cadastro simulado com sucesso!');
+                window.location.href = 'login.html';
             }
         }
     </script>
