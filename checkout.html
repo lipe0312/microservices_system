@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Veridit - Finalizar Pedido</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root { --purple: #8b2fc9; --purple-hover: #7221a8; --bg-light: #f8fafc; --text-dark: #0f172a; --text-muted: #64748b; --border: #cbd5e1; --green: #22c55e; }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; }
+        body { background-color: #ffffff; color: var(--text-dark); min-height: 100vh; display: flex; flex-direction: column; }
+        header { width: 100%; padding: 20px 40px; border-bottom: 1px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center; }
+        .logo { font-size: 24px; font-weight: 700; color: #1e1b4b; display: flex; align-items: center; gap: 8px; cursor: pointer; }
+        .logo-icon { background: var(--purple); width: 24px; height: 18px; border-radius: 4px; display: inline-block; }
+        .user-profile-box { display: flex; align-items: center; gap: 10px; font-size: 14px; font-weight: 600; }
+        .avatar { width: 32px; height: 32px; background: #e9d5ff; color: var(--purple); border-radius: 50%; display: flex; align-items: center; justify-content: center; text-transform: uppercase; font-weight: 700; }
+        .btn-logout { background: none; border: none; color: #ef4444; font-size: 13px; cursor: pointer; text-decoration: underline; margin-left: 6px; }
+        .checkout-layout { display: flex; flex: 1; }
+        .left-panel { flex: 1; padding: 60px 80px; max-width: 650px; }
+        .right-panel { flex: 1; background-color: #f1f5f9; padding: 60px 80px; }
+        h1 { font-size: 32px; font-weight: 700; margin-bottom: 8px; }
+        .box-section { border: 1px solid var(--border); border-radius: 8px; padding: 24px; background: white; margin-bottom: 20px; }
+        .form-group { margin-bottom: 16px; }
+        label { display: block; font-size: 13px; font-weight: 500; margin-bottom: 6px; }
+        input, select { width: 100%; padding: 12px; border: 1px solid var(--border); border-radius: 6px; font-size: 14px; background: var(--bg-light); }
+        .terms-row { display: flex; gap: 10px; align-items: flex-start; margin-top: 16px; font-size: 13px; }
+        .terms-row input { width: auto; margin-top: 3px; }
+        .btn-action { width: 100%; padding: 14px; background: var(--purple); color: #ffffff; border: none; border-radius: 6px; font-size: 14px; font-weight: 600; cursor: pointer; margin-top: 24px; }
+        .pay-option { display: flex; align-items: center; gap: 12px; border: 1px solid var(--border); border-radius: 8px; padding: 16px; margin-bottom: 12px; font-size: 14px; font-weight: 600; cursor: pointer; }
+        .cart-title { font-size: 28px; font-weight: 700; margin-bottom: 24px; border-bottom: 2px solid #cbd5e1; padding-bottom: 12px; }
+        .cart-item { background: white; border-radius: 8px; padding: 20px; border: 1px solid #e2e8f0; }
+        .item-header { display: flex; justify-content: space-between; font-weight: 700; font-size: 16px; }
+        .total-row { display: flex; justify-content: space-between; font-size: 20px; font-weight: 700; margin-top: 40px; border-top: 2px solid #cbd5e1; padding-top: 20px; }
+        .pix-container { text-align: center; background: #f0fdf4; border: 1px dashed var(--green); padding: 16px; border-radius: 8px; margin-top: 16px; }
+        .pix-code { font-family: monospace; background: white; padding: 8px; border: 1px solid var(--border); font-size: 11px; word-break: break-all; margin-top: 8px; }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="logo" onclick="window.location.href='creditos.html'"><span class="logo-icon"></span> Veridit</div>
+        <div id="header-auth-area"><button onclick="window.location.href='login.html'">Logar</button></div>
+    </header>
+    <div class="checkout-layout">
+        <div class="left-panel">
+            <h1>Finalizar Pedido</h1>
+            <div id="checkout-step-user" class="box-section">
+                <div class="form-group"><label>Nome completo</label><input type="text" id="bill-name"></div>
+                <div class="form-group"><label>Email</label><input type="email" id="bill-email"></div>
+                <div class="form-group"><label>Telefone</label><input type="text" id="bill-phone"></div>
+                <div class="form-group"><label>CPF</label><input type="text" id="bill-cpf"></div>
+                <div class="terms-row"><input type="checkbox" id="terms"><label for="terms">Aceito os termos</label></div>
+                <button class="btn-action" onclick="prosseguirPagamento()">Continuar &rarr;</button>
+            </div>
+            <div id="checkout-step-method" class="box-section" style="display: none;">
+                <div class="pay-option" onclick="alternarFormularioPagamento('pix')"><input type="radio" name="pay-type" id="p1" checked><label>PIX</label></div>
+                <div class="pay-option" onclick="alternarFormularioPagamento('card')"><input type="radio" name="pay-type" id="p2"><label>Cartão de Crédito</label></div>
+                <div id="card-form" style="display: none; margin-top: 16px;">
+                    <div class="form-group"><label>Bandeira</label><select id="card-brand"><option>Visa</option><option>Mastercard</option></select></div>
+                    <div class="form-group"><label>Número do Cartão</label><input type="text" id="card-num"></div>
+                    <div style="display: flex; gap: 12px;"><div class="form-group" style="flex:1;"><label>Validade</label><input type="text"></div><div class="form-group" style="flex:1;"><label>CVV</label><input type="text" id="card-cvv"></div></div>
+                </div>
+                <div id="pix-area" style="display: none;" class="pix-container"><div style="color: green; font-weight:700;">Chave Copia e Cola:</div><div id="code-place" class="pix-code"></div></div>
+                <button class="btn-action" onclick="finalizarPedido()">Finalizar Compra</button>
+            </div>
+        </div>
+        <div class="right-panel">
+            <div class="cart-title">Carrinho</div>
+            <div class="cart-item"><div class="item-header"><span id="cart-item-name">...</span><span id="cart-item-price">...</span></div></div>
+            <div class="total-row"><span>Total:</span><span id="cart-total">...</span></div>
+        </div>
+    </div>
+    <script>
+        const pNome = localStorage.getItem('checkout_package_name') || 'Pacote Bronze';
+        const pPreco = parseFloat(localStorage.getItem('checkout_package_price') || '14.99');
+        let modoPagamento = 'pix';
+
+        function verificarSessao() {
+            const token = localStorage.getItem('token');
+            const name = localStorage.getItem('userName');
+            if (token && name) {
+                document.getElementById('header-auth-area').innerHTML = `
+                    <div class="user-profile-box">
+                        <div class="avatar">${name[0]}</div>
+                        <span>Olá, ${name}</span>
+                        <button class="btn-logout" onclick="logout()">Sair</button>
+                    </div>`;
+            }
+        }
+        function logout() { localStorage.clear(); window.location.href = 'login.html'; }
+
+        function atualizarCarrinho() {
+            document.getElementById('cart-item-name').innerText = pNome;
+            document.getElementById('cart-item-price').innerText = `R$ ${pPreco.toFixed(2)}`;
+            document.getElementById('cart-total').innerText = `R$ ${pPreco.toFixed(2)}`;
+        }
+
+        function prosseguirPagamento() {
+            if (!document.getElementById('bill-name').value.trim() || !document.getElementById('bill-cpf').value.trim()) { alert('Preencha os dados.'); return; }
+            if (!document.getElementById('terms').checked) { alert('Aceite os termos.'); return; }
+            document.getElementById('checkout-step-user').style.display = 'none';
+            document.getElementById('checkout-step-method').style.display = 'block';
+            alternarFormularioPagamento('pix');
+        }
+
+        function alternarFormularioPagamento(tipo) {
+            modoPagamento = tipo;
+            document.getElementById('card-form').style.display = tipo === 'card' ? 'block' : 'none';
+            document.getElementById('pix-area').style.display = tipo === 'pix' ? 'block' : 'none';
+            if(tipo === 'pix') document.getElementById('code-place').innerText = "00020101021126580014br.gov.bcb.pix" + Math.random().toString(36).substring(3).toUpperCase();
+        }
+
+        function finalizarPedido() {
+            if(modoPagamento === 'card' && !document.getElementById('card-num').value) { alert('Preencha o cartão.'); return; }
+            alert('Pagamento processado com sucesso!');
+            window.location.href = 'creditos.html';
+        }
+
+        verificarSessao();
+        atualizarCarrinho();
+    </script>
+</body>
+</html>
