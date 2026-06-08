@@ -1,0 +1,28 @@
+# Claude Code
+.claude/
+
+# Dependências Node.js (cada serviço tem o seu)
+node_modules/
+
+# Variáveis de ambiente (nunca commitar segredos)
+.env
+.env.*
+!.env.example
+
+# Logs
+*.log
+logs/
+npm-debug.log*
+
+# Sistema operacional
+.DS_Store
+Thumbs.db
+
+# Editores
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Notas locais de sessão
+changes.txt

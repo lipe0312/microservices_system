@@ -3,7 +3,11 @@
   "version": "1.0.0",
   "main": "server.js",
   "dependencies": {
+    "amqplib": "^0.10.4",
     "cors": "^2.8.5",
-    "express": "^4.19.2"
+    "express": "^4.19.2",
+    "jsonwebtoken": "^9.0.3",
+    "opossum": "^9.0.0",
+    "pg": "^8.11.3"
   }
 }
