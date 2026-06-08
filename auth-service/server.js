@@ -4,6 +4,7 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const cors = require('cors');
 const { pool } = require('./db');
+const authService = require('./services/authService');
 
 const app = express();
 app.use(express.json());
@@ -11,26 +12,16 @@ app.use(cors());
 
 const JWT_SECRET = process.env.JWT_SECRET || 'super_secret_key_faculdade';
 
+// [SOLID: SRP] — controller apenas orquestra, sem regra de negócio
 app.post('/auth/register', async (req, res) => {
-    const { nome_completo, name, email, senha, password, cpf, tipo = 'comum', oab_numero } = req.body;
-    const nomeFinal = nome_completo || name;
-    const senhaFinal = senha || password;
-    if (!email || !senhaFinal) return res.status(400).json({ error: 'Email e senha obrigatórios.' });
-
     try {
-        const existing = await pool.query('SELECT id FROM users WHERE email = $1', [email]);
-        if (existing.rows.length > 0) return res.status(400).json({ error: 'Usuário já cadastrado.' });
-
-        const senha_hash = await bcrypt.hash(senhaFinal, 10);
-        const result = await pool.query(
-            'INSERT INTO users (nome_completo, email, senha_hash, cpf, tipo, oab_numero) VALUES ($1, $2, $3, $4, $5, $6) RETURNING id',
-            [nomeFinal || email.split('@')[0], email, senha_hash, cpf || null, tipo, oab_numero || null]
-        );
-
-        const newId = result.rows[0].id;
-        console.log(`[Auth Service] Usuário registrado: ${email}`);
-        res.status(201).json({ message: 'Usuário cadastrado com sucesso!', userId: newId });
+        const result = await authService.register(req.body);
+        console.log(`[Auth Service] Usuário registrado: ${result.email}`);
+        res.status(201).json({ message: 'Usuário cadastrado com sucesso!', ...result });
     } catch (err) {
+        if (err.status) return res.status(err.status).json({ error: err.message });
+        if (err.code === 'MISSING_FIELDS') return res.status(400).json({ error: err.message });
+        if (err.code === 'DUPLICATE_EMAIL') return res.status(409).json({ error: err.message });
         console.error('[Auth Service] Erro no registro:', err.message);
         res.status(500).json({ error: 'Erro interno ao cadastrar usuário.' });
     }
