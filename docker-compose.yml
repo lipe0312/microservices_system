@@ -24,6 +24,11 @@ services:
       - "3002:3002"
     environment:
       - DATABASE_URL=postgres://user:password@db_payment:5432/payment_db
+      - DB_HOST=db_payment
+      - DB_PORT=5432
+      - DB_NAME=payment_db
+      - DB_USER=user
+      - DB_PASSWORD=password
       - JWT_SECRET=super_secret_key_faculdade
     depends_on:
       - db_payment

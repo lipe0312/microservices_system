@@ -58,3 +58,12 @@ Chosen option: "Implementar o subconjunto mínimo funcional, documentando os des
 **O que a arquitetura exigia:** Checkout via REST síncrono + publicação de evento assíncrono no broker para notificação por e-mail e atualização de saldo.  
 **Justificativa:** RabbitMQ não foi integrado na Sprint 1; a conexão do `checkout.html` ao backend foi adiada.  
 **Impacto:** Não há processamento real de pagamento nem mecanismo de DLQ para falhas de transação. O fluxo de pagamento é completamente não-funcional no backend.
+
+---
+
+## Desvio 5 — Catálogo de Preços gerenciado pelo payment-service
+
+**O que a arquitetura exigia:** Componente `catalog-service` separado.  
+**O que foi implementado:** Tabela `credit_packages` e rotas de catálogo dentro do `payment-service`.  
+**Justificativa:** Escopo acadêmico — criar um microsserviço separado para 3 pacotes estáticos não agrega valor demonstrável e aumenta complexidade operacional sem necessidade.  
+**Impacto:** Baixo. O catálogo pode ser extraído para serviço próprio sem alterar contratos de API do payment-service.

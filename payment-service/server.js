@@ -1,35 +1,38 @@
 const express = require('express');
 const cors = require('cors');
 const authMiddleware = require('./middlewares/auth');
+const paymentService = require('./services/paymentService');
 
 const app = express();
 app.use(express.json());
 app.use(cors());
 
-const creditPackages = [
-    { id: 1, name: 'Pacote Básico', credits: 10, price: 19.90 },
-    { id: 2, name: 'Pacote Intermediário', credits: 50, price: 79.90 },
-    { id: 3, name: 'Pacote Avançado', credits: 100, price: 149.90 }
-];
-
 // [SOLID: OCP] — proteção adicionada via middleware sem modificar lógica das rotas
-app.post('/payments/checkout', authMiddleware, (req, res) => {
-    const { packageId, billingData, userId } = req.body;
+app.get('/payments/packages', async (req, res) => {
+  try {
+    const packages = await paymentService.listPackages();
+    res.status(200).json(packages);
+  } catch (err) {
+    res.status(500).json({ error: 'Erro ao listar pacotes.' });
+  }
+});
 
-    const selectedPackage = creditPackages.find(p => p.id === packageId);
-    if (!selectedPackage) return res.status(404).json({ error: 'Pacote inválido.' });
+app.post('/payments/checkout', authMiddleware, async (req, res) => {
+  const { packageId, billingData } = req.body;
+  const userId = req.user.userId;
 
-    if (!billingData || !billingData.cardNumber || !billingData.cpf) {
-        return res.status(400).json({ error: 'Dados financeiros incompletos.' });
-    }
+  if (!packageId || !billingData) {
+    return res.status(400).json({ error: 'Campos obrigatórios ausentes.' });
+  }
 
-    console.log(`[Payment Service] Cobrando R$${selectedPackage.price} do User ID ${userId}`);
-    
-    // Simulação de transação aprovada
-    res.status(200).json({
-        status: 'Sucesso',
-        message: `Sucesso! O pacote "${selectedPackage.name}" foi processado. ${selectedPackage.credits} créditos foram concedidos ao usuário ID: ${userId}.`
-    });
+  try {
+    const result = await paymentService.initiatePurchase(userId, packageId, billingData);
+    res.status(201).json(result);
+  } catch (err) {
+    if (err.status === 404) return res.status(404).json({ error: err.message });
+    console.error('[Payment Service] Erro no checkout:', err.message);
+    res.status(500).json({ error: 'Erro ao processar pagamento.' });
+  }
 });
 
 app.listen(3002, () => console.log('=> Payment Service ativo na porta 3002'));

@@ -72,12 +72,13 @@
         </div>
     </div>
     <script>
+        const API_BASE = window.ENV_API_BASE || 'http://localhost:3002';
         const pNome = localStorage.getItem('checkout_package_name') || 'Pacote Bronze';
         const pPreco = parseFloat(localStorage.getItem('checkout_package_price') || '14.99');
         let modoPagamento = 'pix';
 
         function verificarSessao() {
-            const token = localStorage.getItem('token');
+            const token = localStorage.getItem('veridit_token');
             const name = localStorage.getItem('userName');
             if (token && name) {
                 document.getElementById('header-auth-area').innerHTML = `
@@ -111,10 +112,51 @@
             if(tipo === 'pix') document.getElementById('code-place').innerText = "00020101021126580014br.gov.bcb.pix" + Math.random().toString(36).substring(3).toUpperCase();
         }
 
-        function finalizarPedido() {
+        async function finalizarPedido() {
             if(modoPagamento === 'card' && !document.getElementById('card-num').value) { alert('Preencha o cartão.'); return; }
-            alert('Pagamento processado com sucesso!');
-            window.location.href = 'creditos.html';
+
+            const token = localStorage.getItem('veridit_token');
+            if (!token) { window.location.href = 'login.html'; return; }
+
+            const packageId = parseInt(localStorage.getItem('checkout_package_id'), 10);
+            const billingData = {
+                name: document.getElementById('bill-name').value,
+                email: document.getElementById('bill-email').value,
+                phone: document.getElementById('bill-phone').value,
+                cpf: document.getElementById('bill-cpf').value,
+                paymentMethod: modoPagamento,
+            };
+            if (modoPagamento === 'card') {
+                billingData.cardNumber = document.getElementById('card-num').value;
+                billingData.cardBrand = document.getElementById('card-brand').value;
+                billingData.cardCvv = document.getElementById('card-cvv').value;
+            }
+
+            try {
+                const response = await fetch(`${API_BASE}/payments/checkout`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`,
+                    },
+                    body: JSON.stringify({ packageId, billingData }),
+                });
+
+                if (response.status === 401) { window.location.href = 'login.html'; return; }
+
+                if (!response.ok) {
+                    const err = await response.json();
+                    alert(err.error || 'Erro ao processar pagamento.');
+                    return;
+                }
+
+                const { pixCode } = await response.json();
+                document.getElementById('pix-area').style.display = 'block';
+                document.getElementById('code-place').innerText = pixCode;
+                document.getElementById('card-form').style.display = 'none';
+            } catch (e) {
+                alert('Erro de conexão com o servidor.');
+            }
         }
 
         verificarSessao();
