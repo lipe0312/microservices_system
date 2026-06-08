@@ -1,4 +1,14 @@
 # PLAN.md — Veridit | Plano de Implementação
+
+---
+
+> **Status: ✅ Concluído**  
+> Sprint encerrada em: 2026-06-07  
+> Requisitos entregues: REQ01, REQ03, REQ04, REQ05, REQ06, REQ07 (40% — acima da meta de 30%)  
+> Resultado: Ver `docs/SPRINT-RESULT.md`
+
+---
+
 > Disciplina: Engenharia de Software I — Prof. Dr. Eduardo Almeida  
 > Trabalho III | Meta: 30% dos requisitos funcionando + arquitetura de microsserviços aderente às ADRs  
 > Stack confirmada: Node.js + Express | PostgreSQL | RabbitMQ | Docker Compose  
