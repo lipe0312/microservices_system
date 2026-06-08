@@ -1,16 +1,11 @@
-// [SOLID: DIP] — depende do módulo db.js, não de implementação direta de pg
+// [SOLID: DIP] — depende do módulo authService, não de implementação direta de pg/jwt
 const express = require('express');
-const bcrypt = require('bcrypt');
-const jwt = require('jsonwebtoken');
 const cors = require('cors');
-const { pool } = require('./db');
 const authService = require('./services/authService');
 
 const app = express();
 app.use(express.json());
 app.use(cors());
-
-const JWT_SECRET = process.env.JWT_SECRET || 'super_secret_key_faculdade';
 
 // [SOLID: SRP] — controller apenas orquestra, sem regra de negócio
 app.post('/auth/register', async (req, res) => {
@@ -27,22 +22,17 @@ app.post('/auth/register', async (req, res) => {
     }
 });
 
+// [SOLID: SRP] — controller apenas orquestra, sem regra de negócio de login
 app.post('/auth/login', async (req, res) => {
     const { email, senha, password } = req.body;
     const senhaFinal = senha || password;
 
     try {
-        const result = await pool.query('SELECT * FROM users WHERE email = $1', [email]);
-        const user = result.rows[0];
-
-        if (!user || !(await bcrypt.compare(senhaFinal, user.senha_hash))) {
-            return res.status(401).json({ error: 'Credenciais inválidas.' });
-        }
-
-        const token = jwt.sign({ userId: user.id, email: user.email, tipo: user.tipo }, JWT_SECRET, { expiresIn: '1h' });
+        const result = await authService.login(email, senhaFinal);
         console.log(`[Auth Service] Login efetuado: ${email}`);
-        res.json({ message: 'Login autorizado!', token, userId: user.id, name: user.nome_completo });
+        res.status(200).json(result);
     } catch (err) {
+        if (err.status === 401) return res.status(401).json({ error: 'Credenciais inválidas.' });
         console.error('[Auth Service] Erro no login:', err.message);
         res.status(500).json({ error: 'Erro interno ao efetuar login.' });
     }

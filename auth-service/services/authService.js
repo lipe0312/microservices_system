@@ -1,5 +1,6 @@
-// [SOLID: SRP] — regra de negócio de registro isolada da camada HTTP
+// [SOLID: SRP] — regra de negócio de autenticação isolada da camada HTTP
 const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
 const userRepository = require('../repositories/userRepository');
 
 async function register(userData) {
@@ -44,4 +45,35 @@ async function register(userData) {
     return { userId: user.id, email: user.email, tipo: user.tipo };
 }
 
-module.exports = { register };
+// [SOLID: SRP] — regra de negócio de login isolada da camada HTTP
+async function login(email, senha) {
+    if (!email || !senha) {
+        const err = new Error('Credenciais inválidas.');
+        err.status = 401;
+        throw err;
+    }
+
+    const user = await userRepository.findByEmail(email);
+    if (!user) {
+        const err = new Error('Credenciais inválidas.');
+        err.status = 401;
+        throw err;
+    }
+
+    const senhaValida = await bcrypt.compare(senha, user.senha_hash);
+    if (!senhaValida) {
+        const err = new Error('Credenciais inválidas.');
+        err.status = 401;
+        throw err;
+    }
+
+    const token = jwt.sign(
+        { userId: user.id, email: user.email, tipo: user.tipo },
+        process.env.JWT_SECRET,
+        { expiresIn: '8h' }
+    );
+
+    return { token, user: { nome_completo: user.nome_completo, email: user.email, tipo: user.tipo } };
+}
+
+module.exports = { register, login };

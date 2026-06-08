@@ -65,7 +65,7 @@
     </div>
     <script>
         function verificarSessao() {
-            const token = localStorage.getItem('token');
+            const token = localStorage.getItem('veridit_token');
             const name = localStorage.getItem('userName');
             if (token && name) {
                 document.getElementById('header-auth-area').innerHTML = `
@@ -76,7 +76,7 @@
                     </div>`;
             }
         }
-        function logout() { localStorage.clear(); window.location.reload(); }
+        function logout() { localStorage.removeItem('veridit_token'); window.location.href = 'login.html'; }
         
         function irParaCheckout(id, nome, preco) {
             localStorage.setItem('checkout_package_id', id);
