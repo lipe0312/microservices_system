@@ -11,4 +11,12 @@ async function createPurchase({ userId, packageId, billingData, pixCode }) {
   return result.rows[0];
 }
 
-module.exports = { createPurchase };
+async function findById(id) {
+  const result = await pool.query(
+    'SELECT * FROM purchases WHERE id = $1',
+    [id]
+  );
+  return result.rows[0] || null;
+}
+
+module.exports = { createPurchase, findById };
