@@ -30,8 +30,37 @@ services:
       - DB_USER=user
       - DB_PASSWORD=password
       - JWT_SECRET=super_secret_key_faculdade
+      - RABBITMQ_URL=amqp://guest:guest@rabbitmq:5672
     depends_on:
-      - db_payment
+      db_payment:
+        condition: service_started
+      rabbitmq:
+        condition: service_healthy
+
+  # Message Broker
+  rabbitmq:
+    image: rabbitmq:3-management
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Microsserviço de Notificações
+  notification-service:
+    build: ./notification-service
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+    environment:
+      - RABBITMQ_URL=amqp://guest:guest@rabbitmq:5672
+    restart: on-failure
 
   # Banco de Dados da Autenticação
   db_auth:

@@ -5,6 +5,7 @@ const packageRepository = require('../repositories/packageRepository');
 const purchaseRepository = require('../repositories/purchaseRepository');
 const pixService = require('./pixService');
 const { createCircuitBreaker } = require('../resilience/circuitBreaker');
+const { publishPaymentConfirmed } = require('../messaging/publisher');
 
 async function listPackages() {
   return packageRepository.listPackages();
@@ -29,6 +30,16 @@ async function initiatePurchase(userId, packageId, billingData) {
     const err = new Error('Serviço temporariamente indisponível.');
     err.status = 503;
     throw err;
+  }
+
+  try {
+    await publishPaymentConfirmed({
+      purchaseId: purchase.id,
+      email: billingData?.email ?? 'usuario@veridit.com',
+      packageId
+    });
+  } catch (pubErr) {
+    console.warn('[Publisher] Falha ao publicar evento — pagamento já gravado:', pubErr.message);
   }
 
   return { purchaseId: purchase.id, status: 'pending', pixCode };
