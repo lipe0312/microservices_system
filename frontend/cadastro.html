@@ -78,7 +78,7 @@
     </div>
 
     <script>
-        const API_BASE = window.ENV_API_BASE || 'http://localhost:3001';
+        const AUTH_BASE = window.ENV_AUTH_BASE || '/api/auth';
 
         // Limpa lixos de sessões anteriores ao carregar a página
         localStorage.clear();
@@ -140,7 +140,7 @@
             if (password !== confirm) { alert('As senhas não conferem.'); return; }
 
             try {
-                const response = await fetch(`${API_BASE}/auth/register`, {
+                const response = await fetch(`${AUTH_BASE}/register`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ name, email, password, perfil: perfilSelecionado })

@@ -1,11 +1,21 @@
 version: '3.8'
 
 services:
+  # API Gateway
+  gateway:
+    image: nginx:alpine
+    ports:
+      - "80:80"
+    volumes:
+      - ./gateway/nginx.conf:/etc/nginx/conf.d/default.conf
+      - ./frontend:/usr/share/nginx/html
+    depends_on:
+      - auth-service
+      - payment-service
+
   # Microsserviço de Autenticação
   auth-service:
     build: ./auth-service
-    ports:
-      - "3001:3001"
     environment:
       - DATABASE_URL=postgres://user:password@db_auth:5432/auth_db
       - DB_HOST=db_auth
@@ -20,8 +30,6 @@ services:
   # Microsserviço de Pagamentos
   payment-service:
     build: ./payment-service
-    ports:
-      - "3002:3002"
     environment:
       - DATABASE_URL=postgres://user:password@db_payment:5432/payment_db
       - DB_HOST=db_payment

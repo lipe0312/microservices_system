@@ -72,7 +72,7 @@
         </div>
     </div>
     <script>
-        const API_BASE = window.ENV_API_BASE || 'http://localhost:3002';
+        const PAYMENTS_BASE = window.ENV_PAYMENTS_BASE || '/api/payments';
         const pNome = localStorage.getItem('checkout_package_name') || 'Pacote Bronze';
         const pPreco = parseFloat(localStorage.getItem('checkout_package_price') || '14.99');
         let modoPagamento = 'pix';
@@ -133,7 +133,7 @@
             }
 
             try {
-                const response = await fetch(`${API_BASE}/payments/checkout`, {
+                const response = await fetch(`${PAYMENTS_BASE}/checkout`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',

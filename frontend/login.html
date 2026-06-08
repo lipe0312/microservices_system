@@ -48,7 +48,7 @@
         <div class="image-side"><div class="books-bg"></div></div>
     </div>
     <script>
-        const API_BASE = window.ENV_API_BASE || 'http://localhost:3001';
+        const AUTH_BASE = window.ENV_AUTH_BASE || '/api/auth';
         let loginPerfil = 'Usuário';
         function setPerfilLogin(perfil) {
             loginPerfil = perfil;
@@ -62,7 +62,7 @@
             if (!email || !password) { alert('Por favor, preencha todos os campos.'); return; }
             
             try {
-                const response = await fetch(`${API_BASE}/auth/login`, {
+                const response = await fetch(`${AUTH_BASE}/login`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ email, password, perfil: loginPerfil })
