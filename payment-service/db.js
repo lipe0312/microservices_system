@@ -9,4 +9,9 @@ const pool = new Pool({
   password: process.env.DB_PASSWORD,
 });
 
+// Evita crash do processo quando o banco cai abruptamente (evento 'error' não tratado no pool)
+pool.on('error', (err) => {
+  console.error('[DB] Erro no pool de conexões:', err.message);
+});
+
 module.exports = { pool };
